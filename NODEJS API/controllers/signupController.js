@@ -5,14 +5,14 @@ const User = require("./../model/user.json");
 
 const userData = {
     users : require("../model/user.json"),
-    setUsers : function (data) {this.users = data}
+    setUsers : function(data) {this.users = data}
 }
 
 const SignUp = async(req, res) => {
-    const {user, pwd} = req.body
+    const {user, pwd} = req.body;
     if (!user || !pwd) return res.status(400).json({ 'message': 'Email, Username and Password are required'});
-    const user_exists = userData.setUsers.find(person => person.username === user);
-    if (user_exists) return req.sendStatus(409);
+    const user_exists = userData.users.find(person => person.username === user);
+    if (user_exists) return res.sendStatus(409);
     try {
         const hashedPassword = await bcypt.hash(pwd, 10);
         const createUser = ({
@@ -22,7 +22,7 @@ const SignUp = async(req, res) => {
         userData.setUsers([...userData.users, createUser]);
         await fsPromises.writeFile(path.join(__dirname, "..", 'model', 'user.json'), JSON.stringify(userData.users));
         console.log(userData.users);
-        res.status(201).json({ 'success' : `New user of email ${email} created`});
+        res.status(201).json({ 'success' : `New user ${user} created`});
     } catch (err) {
         res.status(500).json({ 'message' : err.message });
     }
